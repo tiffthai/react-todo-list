@@ -1,4 +1,8 @@
 import React, { useState, useRef } from "react";
+import './TodoList.css';
+
+import addIcon from '../assets/add.svg';
+import deleteIcon from '../assets/delete.svg';
 
 const AddTaskForm = ({ addTask }) => {
 	const [value, setValue] = useState("");
@@ -16,9 +20,10 @@ const AddTaskForm = ({ addTask }) => {
 				value={value}
 				placeholder="Enter task…"
 				onChange={e => setValue(e.target.value)}
+				id="addTaskInput"
 			/>
-			<button type="submit">
-				submit
+			<button type="submit" id="submitButton">
+				<img src={addIcon} alt="save" className="buttonIcon" />
 			</button>
 		</form>
 	);
@@ -37,8 +42,21 @@ const TodoList = () => {
 		}
 	]);
 	const elementRefs = useRef([]);
+	let [editInProgress, setEditInProgress] = useState([false]);
+	let [activeIndex, setActiveIndex] = useState([-1]);
 
 	const addTask = text => setTasks([...tasks, { text, isCompleted: false}]);
+
+	const handleCheckboxStatus = index => {
+		const newTasks = [...tasks];
+		newTasks[index].isCompleted	= !newTasks[index].isCompleted;
+		setTasks(newTasks);
+	}
+
+	const handleFocusInput = index => {
+		setActiveIndex(index);
+		setEditInProgress(true);
+	}
 
 	const handleUserInput = (index, e) => {
 		const newTasks = [...tasks];
@@ -60,22 +78,36 @@ const TodoList = () => {
 
 	return (
 		<div className="todoList">
+			<h2>React To-do List</h2>
 			<AddTaskForm addTask={addTask} />
 			
 			{tasks.map((task, index) => (
-				<div key={index}>	
-					<div>
+				<div 
+					key={index}
+					className={`taskList ${(editInProgress && (activeIndex == index)) ? "editingTask" : ""}`}
+				>	
+					<input 
+						id={index}
+						className="customCheckbox"
+						type="checkbox"
+						checked={task.isCompleted}
+						onChange={() => handleCheckboxStatus(index)}
+					/>
+					<label htmlFor={index}></label>	
+
+					<div className="textItemContainer">
 						<input 
 							type="text"
 							value={task.text}
 							ref={(el) => elementRefs.current[index] = el}
+							onFocus={() => handleFocusInput(index)}
 							onChange={(e) => handleUserInput(index, e)}
 							onBlur={() => saveEdit(index)}
 						/>
 
-					<button onClick={() => removeTask(index)}>
-						delete
-					</button>
+						<button onClick={() => removeTask(index)} className="deleteButton">
+							<img src={deleteIcon} alt="delete" className="buttonIcon" />
+						</button>
 					</div>
 				</div>
 			))}

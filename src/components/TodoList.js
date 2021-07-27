@@ -64,10 +64,18 @@ const TodoList = () => {
 		setTasks(newTasks);
 	}
 
+	const handleEnterKey = (index, e) => {
+		if (e.keyCode === 13) {
+			elementRefs.current[index].blur();
+		}
+	}
+
 	const saveEdit = index => {
 		const newTasks = [...tasks];
 		newTasks[index].isReadOnly = true;
 		setTasks(newTasks);
+		setActiveIndex(-1);
+		setEditInProgress(false);
 	}
 
 	const removeTask = index => {
@@ -102,6 +110,7 @@ const TodoList = () => {
 							ref={(el) => elementRefs.current[index] = el}
 							onFocus={() => handleFocusInput(index)}
 							onChange={(e) => handleUserInput(index, e)}
+							onKeyUp={(e) => handleEnterKey(index, e)}
 							onBlur={() => saveEdit(index)}
 						/>
 

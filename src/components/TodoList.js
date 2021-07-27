@@ -92,7 +92,7 @@ const TodoList = () => {
 			{tasks.map((task, index) => (
 				<div 
 					key={index}
-					className={`taskList ${(editInProgress && (activeIndex == index)) ? "editingTask" : ""}`}
+					className={`taskList ${(editInProgress && (activeIndex === index)) ? "editingTask" : ""}`}
 				>	
 					<input 
 						id={index}
